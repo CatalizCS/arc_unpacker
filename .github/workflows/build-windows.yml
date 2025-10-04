@@ -21,7 +21,7 @@ jobs:
 
     - name: Install native dependencies with vcpkg
       run: |
-        .\vcpkg\vcpkg.exe install boost-filesystem boost-system zlib libpng libjpeg-turbo openssl libiconv libwebp --triplet x64-windows
+        .\vcpkg\vcpkg.exe install boost-filesystem boost-system boost-locale zlib libpng libjpeg-turbo openssl libiconv libwebp --triplet x64-windows
 
     - name: Configure CMake (Release x64)
       run: |
