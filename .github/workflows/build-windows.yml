@@ -1,0 +1,38 @@
+name: Build Windows Release
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git vcpkg
+        .\vcpkg\bootstrap-vcpkg.bat
+
+    - name: Install native dependencies with vcpkg
+      run: |
+        .\vcpkg\vcpkg.exe install boost-filesystem boost-system zlib libpng libjpeg-turbo openssl libiconv libwebp --triplet x64-windows
+
+    - name: Configure CMake (Release x64)
+      run: |
+        cmake -S . -B build -A x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake
+
+    - name: Build (Release)
+      run: |
+        cmake --build build --config Release -- /m
+
+    - name: Upload artifact (arc_unpacker.exe)
+      uses: actions/upload-artifact@v4
+      with:
+        name: arc_unpacker-exe
+        path: build\Release\arc_unpacker.exe
